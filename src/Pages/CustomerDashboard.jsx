@@ -31,13 +31,6 @@ const CustomerDashboard = () => {
     const [claimPolicyPopup, setClaimPolicyPopup] = useState(false)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const policies = [
-        { id: "ID123", asset: "Car", status: "Active", date: "25/12/2025" },
-        { id: "ID456", asset: "House", status: "Pending Request", date: "10/01/2026" },
-        { id: "ID789", asset: "Bike", status: "Fulfilled", date: "05/07/2024" },
-        { id: "ID789", asset: "Life", status: "Rejected", date: "21/11/2024" },
-        { id: "ID789", asset: "Travel", status: "Under Review", date: "31/01/2024" },
-    ];
     const { customerPolicyList } = useSelector(state => state.data)
     console.log(customerPolicyList, "customerPolicyList")
 

@@ -27,6 +27,7 @@ export const createPolicy = async (data) => {
     const response = await axiosInstance.post("/customers/create", data);
     console.log(data, "data");
     console.log(response, "create policy response");
+    return response.data
 };
 
 export const getCustomerPolicyList = async () => {

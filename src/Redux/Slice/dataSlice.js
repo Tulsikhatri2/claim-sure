@@ -36,7 +36,8 @@ export const createPolicyData = createAsyncThunk(
     "CREATE/POLICY",
     async (data) => {
         try {
-            const resposne = await createPolicy(data)
+            const response = await createPolicy(data)
+            return response
         } catch (error) {
 
         }
