@@ -20,7 +20,7 @@ const Register = () => {
         })
         setRegisterData({ name: "", email: "", password: "" })
         if (response?.data?.name) {
-            navigate("/login")
+            navigate("/")
             toast.success("Registered Successfully, Login with your credentials...")
         }
         console.log(response, "register response")

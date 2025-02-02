@@ -36,7 +36,13 @@ export const getCustomerPolicyList = async () => {
     return response.data
 }
 
-export const getGovernmentPolicyList = async () => {
+export const getGovernmentRequestedList = async () => {
     const response = await axiosInstance.get("/government/policies")
     console.log(response, "government data response")
+    return response.data
+}
+
+export const claimPolicy = async (id) => {
+    const response = await axiosInstance.get(`/customers/claim/${id}`)
+    console.log(response, "claim policy response")
 }

@@ -18,6 +18,12 @@ const persistedReducer = persistReducer(persistConfig, reducer)
 
 const store = configureStore({
     reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['persist/PERSIST'], // Ignore specific actions that might include non-serializable data
+            },
+        }),
 })
 
 
