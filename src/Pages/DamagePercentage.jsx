@@ -34,6 +34,7 @@ const DamagePercentage = () => {
         },
       });
       setResult(response.data);
+      console.log(response, "difference data")
       setOpenDialog(true); // Open dialog with results
     } catch (err) {
       setError("An error occurred while comparing images.");
@@ -61,22 +62,22 @@ const DamagePercentage = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ padding: "20px" , background: "linear-gradient(to bottom,rgb(195, 182, 225), white)"}}>
+    <Container maxWidth="xl" sx={{ padding: "20px", background: "linear-gradient(to bottom,rgb(195, 182, 225), white)" }}>
       <Box textAlign="center" mb={2}>
         <Typography variant="h4" color="linear-gradient(to right, #0f0c29, #302b63, #24243e)" fontWeight="bold"
-        sx={{fontFamily:"inherit"}}>
+          sx={{ fontFamily: "inherit" }}>
           Damage Percentage Calculation
         </Typography>
       </Box>
       <Box textAlign="center" mb={2}>
-          <Button variant="contained" onClick={handleSubmit} disabled={loading}
-          sx={{fontFamily:"inherit", backgroundColor:"rgb(103, 57, 212)"}}>
-            Compare
-          </Button>
-        </Box>
-        {loading && <CircularProgress />}
+        <Button variant="contained" onClick={handleSubmit} disabled={loading}
+          sx={{ fontFamily: "inherit", backgroundColor: "rgb(103, 57, 212)" }}>
+          Compare
+        </Button>
+      </Box>
+      {loading && <CircularProgress />}
 
-        {error && <Typography sx={{fontFamily:"inherit", color:"maroon", fontWeight:"bold",paddingBottom:"2vh"}} textAlign={"center"}>{error}</Typography>}
+      {error && <Typography sx={{ fontFamily: "inherit", color: "maroon", fontWeight: "bold", paddingBottom: "2vh" }} textAlign={"center"}>{error}</Typography>}
 
       <form noValidate>
         <Box display="flex" justifyContent="center" mb={3}>
@@ -132,19 +133,19 @@ const DamagePercentage = () => {
 
       {/* Dialog for Results */}
       <Dialog open={openDialog} onClose={handleDialogClose}>
-        <DialogTitle sx={{fontFamily:"inherit", textAlign:"center", textDecoration:"underline"}}>Comparison Results</DialogTitle>
+        <DialogTitle sx={{ fontFamily: "inherit", textAlign: "center", textDecoration: "underline" }}>Comparison Results</DialogTitle>
         <DialogContent>
           {result ? (
             <>
-              <Typography variant="body1" sx={{fontFamily:"inherit",textAlign:"center"}}>Similarity: <span style={{color:"maroon", fontWeight:"bold"}}>{result.similarity}</span></Typography>
-              <Typography variant="body1" sx={{fontFamily:"inherit",textAlign:"center"}}>Difference Percentage: <span style={{color:"maroon", fontWeight:"bold"}}>{result.differencePercentage}%</span></Typography>
+              <Typography variant="body1" sx={{ fontFamily: "inherit", textAlign: "center" }}>Similarity: <span style={{ color: "maroon", fontWeight: "bold" }}>{result.similarity}</span></Typography>
+              <Typography variant="body1" sx={{ fontFamily: "inherit", textAlign: "center" }}>Difference Percentage: <span style={{ color: "maroon", fontWeight: "bold" }}>{result.damagePercentage}%</span></Typography>
             </>
           ) : (
-            <Typography variant="body1" sx={{fontFamily:"inherit",textAlign:"center"}}>An error occurred while comparing images.</Typography>
+            <Typography variant="body1" sx={{ fontFamily: "inherit", textAlign: "center" }}>An error occurred while comparing images.</Typography>
           )}
         </DialogContent>
-        <DialogActions sx={{display:"flex",alignItems:"center",width:"94%",justifyContent:"center"}} >
-          <Button onClick={handleDialogClose} sx={{fontFamily:"inherit", backgroundColor:"rgb(103, 57, 212)",color:"white"}}>
+        <DialogActions sx={{ display: "flex", alignItems: "center", width: "94%", justifyContent: "center" }} >
+          <Button onClick={handleDialogClose} sx={{ fontFamily: "inherit", backgroundColor: "rgb(103, 57, 212)", color: "white" }}>
             Close
           </Button>
         </DialogActions>

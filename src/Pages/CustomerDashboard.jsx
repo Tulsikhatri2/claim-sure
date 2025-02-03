@@ -30,6 +30,7 @@ const CustomerDashboard = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [createPolicyPopup, setCreatePolicyPopup] = useState(false)
     const [claimPolicyPopup, setClaimPolicyPopup] = useState(false)
+    const [policyData,setPolicyData] = useState(null)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { customerPolicyList } = useSelector(state => state.data)
@@ -60,16 +61,13 @@ const CustomerDashboard = () => {
         setCreatePolicyPopup(false)
     }
 
-    const handleClaimPolicyOpen = () => {
+    const handleClaimPolicyOpen = (data) => {
+        setPolicyData(data)
         setClaimPolicyPopup(true)
     }
 
     const handleClaimPolicyClose = () => {
         setClaimPolicyPopup(false)
-    }
-
-    const handleClaimPolicy = () => {
-
     }
 
     const menuItems = [
@@ -162,7 +160,7 @@ const CustomerDashboard = () => {
                 sx={{ flexGrow: 1, p: 3, width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` } }}
             >
                 <Toolbar />
-                {customerPolicyList.length == 0 ?
+                {customerPolicyList?.length == 0 ?
                     <div style={{
                         height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
 
@@ -239,7 +237,7 @@ const CustomerDashboard = () => {
                                             <td style={{ padding: "10px", textAlign: "center" }}>
                                                 <Button variant="contained" sx={{ fontWeight: "bold", fontSize: "1.5vh" }}
                                                     disabled={policy.policyStatus !== "active"}
-                                                    onClick={handleClaimPolicyOpen}>Claim Policy</Button>
+                                                    onClick={()=>handleClaimPolicyOpen(policy)}>Claim Policy</Button>
                                             </td>
                                         </tr>
                                     ))}
@@ -253,7 +251,7 @@ const CustomerDashboard = () => {
                 </Typography>
             </Box>
             <CreatePolicy open={createPolicyPopup} handleClose={handleClose} />
-            <ClaimPolicy open={claimPolicyPopup} handleClose={handleClaimPolicyClose} />
+            <ClaimPolicy open={claimPolicyPopup} handleClose={handleClaimPolicyClose} policyData={policyData}/>
         </Box >
     );
 }

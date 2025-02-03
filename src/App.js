@@ -19,7 +19,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Routes>
-        {/* <Route path="/" element={<DamagePercentage />} /> */}
+        <Route path="/damage" element={<DamagePercentage />} />
         <Route path="/" element={<Authentication />} />
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
         <Route path="/surveyor-dashboard" element={<SurveyorDashboard />} />

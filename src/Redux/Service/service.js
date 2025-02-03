@@ -42,7 +42,21 @@ export const getGovernmentRequestedList = async () => {
     return response.data
 }
 
-export const claimPolicy = async (id) => {
-    const response = await axiosInstance.get(`/customers/claim/${id}`)
+export const claimPolicy = async (payload) => {
+    const { id, formData } = payload
+    const response = await axiosInstance.post(`/customers/claim/${id}`, formData)
     console.log(response, "claim policy response")
+    return response.data
+}
+
+export const governmentAcceptancePolicy = async (payload) => {
+    const { id, action } = payload
+    const response = await axiosInstance.put(`/government/approve-reject/${id}`, { action: action })
+    console.log(response, "government policy action")
+    return response.data
+}
+
+export const gerSurveyorList = async () => {
+    const response = await axiosInstance.get("/surveyors/claim-policies")
+    console.log(response, "surveyor get data policy list")
 }

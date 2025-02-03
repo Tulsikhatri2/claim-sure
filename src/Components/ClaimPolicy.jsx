@@ -1,23 +1,56 @@
-import { Close, CloudUpload } from '@mui/icons-material'
-import { Box, Button, Dialog, IconButton, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { Close, CloudUpload } from '@mui/icons-material';
+import { Box, Button, Dialog, IconButton, TextField, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { claimCustomerPolicy, getCustomerPolicyListData } from '../Redux/Slice/dataSlice';
+import toast from 'react-hot-toast';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
-const ClaimPolicy = ({ open, handleClose }) => {
-    const [description, setDescription] = useState("")
-    const [image, setImage] = useState(null);
+const ClaimPolicy = ({ open, handleClose, policyData }) => {
+    const { loginData } = useSelector(state => state.auth);
+    const dispatch = useDispatch();
     const [imageName, setImageName] = useState("Upload Damage Image*");
-    const { loginData } = useSelector(state => state.auth)
+
+    const formik = useFormik({
+        initialValues: {
+            description: '',
+            image: null,
+        },
+        validationSchema: Yup.object({
+            description: Yup.string().required('Description is required'),
+            image: Yup.mixed().required('Damage image is required'),
+        }),
+        onSubmit: (values) => {
+            const formData = new FormData();
+            formData.append("damageDescription", values.description);
+            formData.append("damageImage", values.image);
+
+            const damageData = {
+                formData: formData,
+                id: policyData?.policyId
+            };
+
+            dispatch(claimCustomerPolicy(damageData))
+                .then((res) => {
+                    if (res?.payload?.message === "Claim request submitted successfully. Surveyor will review it.") {
+                        toast.success("Claim requested successfully");
+                        dispatch(getCustomerPolicyListData());
+                        handleClose();
+                        formik.resetForm();
+                        setImageName("Upload Damage Image*");
+                    }
+                });
+        },
+    });
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setImage(file);
-            setImageName(file.name); // Update button text with file name
+            formik.setFieldValue("image", file);
+            setImageName(file.name);
         }
     };
-
-    console.log(image, "image")
 
     return (
         <Dialog
@@ -26,9 +59,7 @@ const ClaimPolicy = ({ open, handleClose }) => {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            {/* Dialog Content */}
             <div style={{ padding: "5vh", height: "60vh", width: "37vw", position: "relative" }}>
-                {/* Close Button */}
                 <IconButton
                     onClick={handleClose}
                     sx={{
@@ -42,7 +73,6 @@ const ClaimPolicy = ({ open, handleClose }) => {
                     <Close />
                 </IconButton>
 
-                {/* Title */}
                 <Typography
                     fontWeight={"800"}
                     fontFamily={"inherit"}
@@ -53,7 +83,6 @@ const ClaimPolicy = ({ open, handleClose }) => {
                     Claim Policy
                 </Typography>
 
-                {/* Customer Details */}
                 <div style={{
                     display: "flex",
                     flexDirection: "column",
@@ -66,7 +95,6 @@ const ClaimPolicy = ({ open, handleClose }) => {
                     <Typography sx={{ fontWeight: "750", fontSize: "2.5vh" }}>Customer Email: {loginData?.email}</Typography>
                 </div>
 
-                {/* Description Input */}
                 <Box sx={{ width: "100%" }}>
                     <TextField
                         label="Enter description*"
@@ -74,8 +102,12 @@ const ClaimPolicy = ({ open, handleClose }) => {
                         multiline
                         rows={2}
                         fullWidth
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        name="description"
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.description && Boolean(formik.errors.description)}
+                        helperText={formik.touched.description && formik.errors.description}
                         placeholder="Enter your full address..."
                         sx={{
                             backgroundColor: "#f9f9f9",
@@ -90,7 +122,6 @@ const ClaimPolicy = ({ open, handleClose }) => {
                     />
                 </Box>
 
-                {/* Upload Button */}
                 <Box sx={{ textAlign: "center", marginTop: "2vh" }}>
                     <input
                         type="file"
@@ -118,28 +149,34 @@ const ClaimPolicy = ({ open, handleClose }) => {
                             {imageName.length > 20 ? `${imageName.substring(0, 17)}...` : imageName}
                         </Button>
                     </label>
+                    {formik.touched.image && formik.errors.image && (
+                        <Typography color="error" sx={{ mt: 1 }}>{formik.errors.image}</Typography>
+                    )}
                 </Box>
+
                 <Box sx={{ marginTop: "5vh", display: "flex", alignItems: "center", justifyContent: "center", gap: "2vh" }}>
                     <Button
                         component="span"
                         variant="contained"
                         sx={{
-                            backgroundColor: "#C01B0F",
+                            backgroundColor: formik.isValid ? "#C01B0F" : "grey",
                             color: "white",
                             textTransform: "none",
                             fontWeight: "bold",
                             padding: "10px 57px",
                             borderRadius: "8px",
                             height: "5.4vh",
-                            "&:hover": { backgroundColor: "#4500b5" }
+                            "&:hover": { backgroundColor: formik.isValid ? "#4500b5" : "grey" }
                         }}
+                        disabled={!formik.isValid}
+                        onClick={formik.handleSubmit}
                     >
                         Claim Policy
                     </Button>
                 </Box>
             </div>
         </Dialog>
-    )
-}
+    );
+};
 
-export default ClaimPolicy
+export default ClaimPolicy;

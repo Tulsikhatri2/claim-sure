@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { claimPolicy, createPolicy, getCustomerPolicyList, getGovernmentRequestedList } from "../Service/service";
+import { claimPolicy, createPolicy, gerSurveyorList, getCustomerPolicyList, getGovernmentRequestedList, governmentAcceptancePolicy } from "../Service/service";
+import { fabClasses } from "@mui/material";
 
 const dataSlice = createSlice({
     name: "data",
@@ -14,7 +15,10 @@ const dataSlice = createSlice({
         governmentListLoading: false,
         governmentListSuccess: false,
         governmentListError: false,
-        governmentRequestedList: []
+        governmentRequestedList: [],
+        acceptanceLoading: false,
+        acceptanceSuccess: false,
+        acceptanceError: false
     },
     reducers: {
     },
@@ -67,6 +71,11 @@ const dataSlice = createSlice({
                 state.governmentListSuccess = false
                 state.governmentListError = true
             })
+            .addCase(governmentAcceptAction.pending, (state, action) => {
+                state.acceptanceLoading = true
+                state.acceptanceSuccess = false
+                state.acceptanceError = false
+            })
     }
 })
 
@@ -112,6 +121,30 @@ export const claimCustomerPolicy = createAsyncThunk(
     async (id) => {
         try {
             const response = await claimPolicy(id)
+            return response
+        } catch (error) {
+
+        }
+    }
+)
+
+export const governmentAcceptAction = createAsyncThunk(
+    "GOVERNMENT/ACCEPT/POLICY",
+    async (data) => {
+        try {
+            const response = await governmentAcceptancePolicy(data)
+            return response
+        } catch (error) {
+
+        }
+    }
+)
+
+export const getSurveyorPolicyList = createAsyncThunk(
+    "SURVEYOR/POLICY/LIST",
+    async () => {
+        try {
+            const response = await gerSurveyorList()
         } catch (error) {
 
         }

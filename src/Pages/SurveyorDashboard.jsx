@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Box,
@@ -19,13 +19,15 @@ import { Menu, Dashboard, Logout } from "@mui/icons-material";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useNavigate } from "react-router-dom";
 import CreatePolicy from "../Components/CreatePolicy";
+import { useDispatch } from "react-redux";
+import { getSurveyorPolicyList } from "../Redux/Slice/dataSlice";
 
 const drawerWidth = 265;
 
 const SurveyorDashboard = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [createPolicyPopup, setCreatePolicyPopup] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const policies = [
     { id: "ID123", asset: "Car", status: "Active", date: "25/12/2025" },
     { id: "ID456", asset: "House", status: "Pending Request", date: "10/01/2026" },
@@ -33,27 +35,23 @@ const SurveyorDashboard = () => {
     { id: "ID789", asset: "Life", status: "Rejected", date: "05/07/2024" },
   ];
 
+  useEffect(() => {
+    dispatch(getSurveyorPolicyList())
+  }, [])
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const handleSidebar = (data) => {
-    if (data == "Create New Policy") {
-      setCreatePolicyPopup(true)
-    }
-    else if (data == "Logout") {
+    if (data == "Logout") {
       localStorage.clear()
       navigate("/")
     }
   }
 
-  const handleClose = () => {
-    setCreatePolicyPopup(false)
-  }
-
   const menuItems = [
     { text: "Dashboard", icon: <Dashboard /> },
-    { text: "Create New Policy", icon: <AddBoxIcon /> },
     { text: "Logout", icon: <Logout /> },
   ];
 
@@ -159,18 +157,20 @@ const SurveyorDashboard = () => {
             }}>
               <thead>
                 <tr style={{ backgroundColor: "#f5f5f5", textAlign: "left", fontWeight: "900" }}>
-                  <th style={{ width: "8vw", padding: "10px", color: "blue" }}>Policy ID</th>
-                  <th style={{ width: "35vw", padding: "10px", color: "blue" }}>Asset</th>
-                  <th style={{ width: "8vw", textAlign: "center", color: "blue" }}>Status</th>
-                  <th style={{ width: "8vw", textAlign: "center", color: "blue" }}>Date</th>
-                  <th style={{ textAlign: "center", color: "blue" }}>Action</th>
+                  <th style={{ width: "8vw", padding: "10px", color: "blue", textAlign: "center" }}>Customer ID</th>
+                  <th style={{ width: "10vw", padding: "10px", color: "blue", textAlign: "center" }}>Asset</th>
+                  <th style={{ width: "10vw", textAlign: "center", color: "blue" }}>Insurance Amount</th>
+                  <th style={{ width: "6vw", textAlign: "center", color: "blue" }}>Status</th>
+                  <th style={{ width: "6vw", textAlign: "center", color: "blue" }}>Date</th>
+                  <th style={{ width: "10vw", textAlign: "center", color: "blue" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {policies.map((policy, index) => (
                   <tr key={index} style={{ borderBottom: "1px solid #E0E0E0" }}>
-                    <td style={{ padding: "10px", fontWeight: "800" }}>{policy.id}</td>
-                    <td style={{ padding: "10px", fontWeight: "bold" }}>{policy.asset}</td>
+                    <td style={{ padding: "10px", fontWeight: "800", textAlign: "center" }}>{policy.id}</td>
+                    <td style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{policy.asset}</td>
+                    <td style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>Insurance Amount</td>
                     <td>
                       <p style={{
                         paddingBlock: "3px",
@@ -195,42 +195,18 @@ const SurveyorDashboard = () => {
                     </td>
                     <td style={{ padding: "10px", textAlign: "center" }}>
                       <Button variant="contained" sx={{ fontWeight: "bold", fontSize: "1.5vh" }}
-                        disabled={policy.status == "Rejected"}>Claim Policy</Button>
+                      // disabled={policy.status == "Rejected"}
+                      >View</Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {/* <Box sx={{
-                            width: "90%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            borderBottom: "1px solid #E0E0E0",
-                            paddingInline: "2vw",
-                        }}>
-                            <div style={{ display: "flex", alignItems: "start" }}>
-                                <p style={{ fontWeight: "800" }}>ID123</p>
-                                <p style={{ marginLeft: "1vw", fontWeight: "bold" }}>Car</p>
-
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1vw" }}>
-                                <p style={{
-                                    paddingBlock: "3px", paddingInline: "10px", borderRadius: "2vh",
-                                    border: "1px solid #9C9C9C", fontSize: "1.5vh", fontWeight: "bold",
-                                    color: "#9C9C9C"
-                                }}>Policy Status</p>
-                                <p style={{ color: "#9C9C9C", fontSize: "1.8vh", fontWeight: "bold" }}>25/12/2025</p>
-                                <Button variant="contained">Claim Policy</Button>
-                            </div>
-                        </Box> */}
-
           </Box>
         </Box>
         <Typography variant="body1">
         </Typography>
       </Box>
-      <CreatePolicy open={createPolicyPopup} handleClose={handleClose} />
     </Box >
   );
 }

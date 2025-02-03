@@ -41,8 +41,8 @@ const authSlice = createSlice({
                 state.loginLoading = false
                 state.loginSuccess = true
                 state.loginError = false
-                // state.loginData = action.payload
-                // localStorage.setItem("token", action.payload?.token)
+                state.loginData = action.payload
+                localStorage.setItem("token", action.payload?.token)
             })
             .addCase(surveyorLoginResponse.rejected, (state, action) => {
                 state.loginLoading = false

@@ -34,10 +34,6 @@ const CreatePolicy = ({ open, handleClose }) => {
     };
 
     const handleCreatePolicy = async (values) => {
-        if (!values.image) {
-            toast.error("Please upload an image.");
-            return;
-        }
 
         const formData = new FormData();
         formData.append("phoneNumber", values.contact);

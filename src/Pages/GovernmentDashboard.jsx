@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { governmentRequestList } from '../Redux/Slice/dataSlice'
+import { governmentAcceptAction, governmentRequestList } from '../Redux/Slice/dataSlice'
 import { AppBar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, Toolbar, Typography } from '@mui/material'
 import { Dashboard, Logout } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PollIcon from '@mui/icons-material/Poll';
+import toast from 'react-hot-toast'
 
 
 const drawerWidth = 265;
@@ -12,7 +14,7 @@ const drawerWidth = 265;
 const GovernmentDashboard = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { governmentRequestedList } = useSelector(state => state.data)
-  const { loginData } = useSelector(state => state.auth)
+  // const { loginData } = useSelector(state => state.auth)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -28,7 +30,8 @@ const GovernmentDashboard = () => {
 
   const menuItems = [
     { text: "Dashboard", icon: <Dashboard /> },
-    { text: "Logout", icon: <Logout /> },
+    { text: "Serveyor Requests", icon: <PollIcon /> },
+    { text: "Logout", icon: <Logout /> }
   ];
 
   const handleSidebar = (data) => {
@@ -36,6 +39,17 @@ const GovernmentDashboard = () => {
       localStorage.clear()
       navigate("/")
     }
+  }
+
+  const handleGovernmentAcceptance = (data) => {
+    dispatch(governmentAcceptAction(data))
+      .then((res) => {
+        console.log(res, "acceptance")
+        if (res?.payload?.message == "Policy approved successfully") {
+          dispatch(governmentRequestList())
+          toast.success("Policy approved successfully")
+        }
+      })
   }
 
   const drawer = (
@@ -88,7 +102,7 @@ const GovernmentDashboard = () => {
             <Menu />
           </IconButton>
           <Typography variant="h6" noWrap fontWeight={"800"}>
-            Customer Dashboard
+            Admin Dashboard
           </Typography>
         </Toolbar>
       </AppBar>
@@ -156,45 +170,50 @@ const GovernmentDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {governmentRequestedList.map((item) => {
+                {governmentRequestedList?.map((item) => {
                   const date = item.createdAt
                   const formattedDate = new Date(date).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "2-digit",
                     year: "2-digit",
                   });
-
-                  console.log(formattedDate, "date");
-
                   return (
                     <tr style={{ borderBottom: "1px solid #E0E0E0", fontWeight: "800" }}>
                       <td style={{ textAlign: "center", padding: "10px" }}>{item?.customerId}</td>
-                      <td style={{ textAlign: "center", padding: "10px" }}>{item?.type.toUpperCase()}</td>
+                      <td style={{ textAlign: "center", padding: "10px" }}>{item?.type?.toUpperCase()}</td>
                       <td style={{ textAlign: "center", padding: "10px" }}>{item?.insuranceAmount}</td>
                       <td style={{ textAlign: "center", padding: "10px" }}>
                         <p style={{
                           paddingBlock: "3px",
                           paddingInline: "10px",
                           borderRadius: "2vh",
-                          border: `${item?.claimDetails?.status == "active" ? "1px solid green" :
-                            item?.claimDetails?.status == "fulfilled" ? "1px solid blue" :
-                              item?.claimDetails?.status == "rejected" ? "1px solid red" : item?.claimDetails?.status == "under review" ? "1px solid #E0952B" : "1px solid #9C9C9C"}`,
+                          border: `${item?.policyStatus == "active" ? "1px solid green" :
+                            item?.policyStatus == "fulfilled" ? "1px solid blue" :
+                              item?.policyStatus == "rejected" ? "1px solid red" : item?.policyStatus == "under review" ? "1px solid #E0952B" : "1px solid #9C9C9C"}`,
                           fontSize: "1.5vh",
                           fontWeight: "bold",
-                          color: `${item?.claimDetails?.status == "active" ? "green" :
-                            item?.claimDetails?.status == "fulfilled" ? "blue" :
-                              item?.claimDetails?.status == "rejected" ? "red" : item?.claimDetails?.status == "under review" ? "#E0952B" : "#9C9C9C"}`,
+                          color: `${item?.policyStatus == "active" ? "green" :
+                            item?.policyStatus == "fulfilled" ? "blue" :
+                              item?.policyStatus == "rejected" ? "red" : item?.policyStatus == "under review" ? "#E0952B" : "#9C9C9C"}`,
                           width: "100%",
                           textAlign: "center"
                         }}>
-                          {item?.claimDetails?.status.toUpperCase()}
+                          {item?.policyStatus?.toUpperCase()}
                         </p>
                       </td>
                       <td style={{ textAlign: "center", padding: "10px" }}>{formattedDate}</td>
                       <td style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingInline: "1vw", padding: "10px" }}>
-                        <Button variant="contained" sx={{ fontWeight: "bold", fontSize: "1.5vh" }}>
+                        <Button variant="contained" sx={{ fontWeight: "bold", fontSize: "1.5vh" }}
+                          onClick={() => {
+                            const payload = {
+                              id: item?.policyId,
+                              action: "approve"
+                            }
+                            handleGovernmentAcceptance(payload)
+                          }}
+                          disabled={item.policyStatus != "pending"}>
                           Accept Request</Button>
-                        <Button variant="contained" color='error' sx={{ fontWeight: "bold", fontSize: "1.5vh" }}>
+                        <Button variant="contained" color='error' disabled={item.policyStatus != "pending"} sx={{ fontWeight: "bold", fontSize: "1.5vh" }}>
                           Reject Request</Button>
                       </td>
                     </tr>
