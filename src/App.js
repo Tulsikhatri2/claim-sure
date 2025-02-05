@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import DamagePercentage from "./Pages/DamagePercentage";
 import Authentication from "./Pages/Login";
 import CustomerDashboard from "./Pages/CustomerDashboard";
 import SurveyorDashboard from "./Pages/SurveyorDashboard";
@@ -19,7 +18,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Routes>
-        <Route path="/damage" element={<DamagePercentage />} />
         <Route path="/" element={<Authentication />} />
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
         <Route path="/surveyor-dashboard" element={<SurveyorDashboard />} />

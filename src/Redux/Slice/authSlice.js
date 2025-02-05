@@ -15,7 +15,7 @@ const authSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
-            .addCase(customerLoginResponse.pending, (state, action) => {
+            .addCase(customerLoginResponse.pending, (state) => {
                 state.loginLoading = true
                 state.loginSuccess = false
                 state.loginError = false
@@ -26,13 +26,14 @@ const authSlice = createSlice({
                 state.loginError = false
                 state.loginData = action.payload.customer
                 localStorage.setItem("token", action.payload?.token)
+                localStorage.setItem("user", "customer")
             })
-            .addCase(customerLoginResponse.rejected, (state, action) => {
+            .addCase(customerLoginResponse.rejected, (state) => {
                 state.loginLoading = false
                 state.loginSuccess = false
                 state.loginError = true
             })
-            .addCase(surveyorLoginResponse.pending, (state, action) => {
+            .addCase(surveyorLoginResponse.pending, (state) => {
                 state.loginLoading = true
                 state.loginSuccess = false
                 state.loginError = false
@@ -43,13 +44,15 @@ const authSlice = createSlice({
                 state.loginError = false
                 state.loginData = action.payload
                 localStorage.setItem("token", action.payload?.token)
+                localStorage.setItem("user", "surveyor")
+
             })
-            .addCase(surveyorLoginResponse.rejected, (state, action) => {
+            .addCase(surveyorLoginResponse.rejected, (state) => {
                 state.loginLoading = false
                 state.loginSuccess = false
                 state.loginError = true
             })
-            .addCase(governmentLoginResponse.pending, (state, action) => {
+            .addCase(governmentLoginResponse.pending, (state) => {
                 state.loginLoading = true
                 state.loginSuccess = false
                 state.loginError = false
@@ -60,25 +63,25 @@ const authSlice = createSlice({
                 state.loginError = false
                 state.loginData = action.payload
                 localStorage.setItem("token", action.payload?.token)
+                localStorage.setItem("user", "government")
+
             })
-            .addCase(governmentLoginResponse.rejected, (state, action) => {
+            .addCase(governmentLoginResponse.rejected, (state) => {
                 state.loginLoading = false
                 state.loginSuccess = false
                 state.loginError = true
             })
-            .addCase(registerCustomer.pending, (state, action) => {
+            .addCase(registerCustomer.pending, (state) => {
                 state.registerLoading = true
                 state.registerSuccess = false
                 state.registerError = false
             })
-            .addCase(registerCustomer.fulfilled, (state, action) => {
+            .addCase(registerCustomer.fulfilled, (state) => {
                 state.registerLoading = false
                 state.registerSuccess = true
                 state.registerError = false
-                // state.loginData = action.payload
-                // localStorage.setItem("token", action.payload?.token)
             })
-            .addCase(registerCustomer.rejected, (state, action) => {
+            .addCase(registerCustomer.rejected, (state) => {
                 state.loginLoading = false
                 state.registerSuccess = false
                 state.registerError = true
@@ -94,7 +97,7 @@ export const customerLoginResponse = createAsyncThunk(
             const response = customerLogin(loginData)
             return response
         } catch (error) {
-            console.log("Login error: ", error)
+            console.log("Customer Login Error: ", error)
         }
     }
 )
@@ -106,7 +109,7 @@ export const surveyorLoginResponse = createAsyncThunk(
             const response = surveyorLogin(loginData)
             return response
         } catch (error) {
-            console.log("Login error: ", error)
+            console.log("Surveyor Login Error: ", error)
         }
     }
 )
@@ -118,7 +121,7 @@ export const governmentLoginResponse = createAsyncThunk(
             const response = governmentLogin(loginData)
             return response
         } catch (error) {
-            console.log("Login error: ", error)
+            console.log("Government Login Error: ", error)
         }
     }
 )
@@ -128,8 +131,9 @@ export const registerCustomer = createAsyncThunk(
     async (registerData) => {
         try {
             const response = customerRegister(registerData)
+            return response
         } catch (error) {
-            console.log("Register Data: ", error)
+            console.log("Register Error: ", error)
         }
     }
 )
