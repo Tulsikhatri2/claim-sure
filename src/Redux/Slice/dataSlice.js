@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { claimPolicy, createPolicy, gerSurveyorList, getCustomerPolicyList, getGovernmentRequestedList, governmentAcceptancePolicy } from "../Service/service";
+import { claimPolicy, createPolicy, damageCalculation, gerSurveyorList, getCustomerPolicyList, getGovernmentRequestedList, governmentAcceptancePolicy } from "../Service/service";
 import { fabClasses } from "@mui/material";
 
 const dataSlice = createSlice({
@@ -18,7 +18,14 @@ const dataSlice = createSlice({
         governmentRequestedList: [],
         acceptanceLoading: false,
         acceptanceSuccess: false,
-        acceptanceError: false
+        acceptanceError: false,
+        surveyorList: [],
+        surveyorListLoading: false,
+        surveyorListSuccess: false,
+        surveyorListError: false,
+        damageDataLoading: false,
+        damageDataSuccess: false,
+        damageDataError: false
     },
     reducers: {
     },
@@ -75,6 +82,47 @@ const dataSlice = createSlice({
                 state.acceptanceLoading = true
                 state.acceptanceSuccess = false
                 state.acceptanceError = false
+            })
+            .addCase(governmentAcceptAction.fulfilled, (state, action) => {
+                state.acceptanceLoading = false
+                state.acceptanceSuccess = true
+                state.acceptanceError = false
+            })
+            .addCase(governmentAcceptAction.rejected, (state, action) => {
+                state.acceptanceLoading = false
+                state.acceptanceSuccess = false
+                state.acceptanceError = true
+            })
+            .addCase(getSurveyorPolicyList.pending, (state, action) => {
+                state.surveyorListLoading = true
+                state.surveyorListSuccess = false
+                state.surveyorListError = false
+            })
+            .addCase(getSurveyorPolicyList.fulfilled, (state, action) => {
+                state.surveyorListLoading = false
+                state.surveyorListSuccess = true
+                state.surveyorListError = false
+                state.surveyorList = action.payload
+            })
+            .addCase(getSurveyorPolicyList.rejected, (state, action) => {
+                state.surveyorListLoading = false
+                state.surveyorListSuccess = false
+                state.surveyorListError = true
+            })
+            .addCase(objectDamageData.pending, (state, action) => {
+                state.damageDataLoading = true
+                state.damageDataSuccess = false
+                state.damageDataError = false
+            })
+            .addCase(objectDamageData.fulfilled, (state, action) => {
+                state.damageDataLoading = false
+                state.damageDataSuccess = true
+                state.damageDataError = false
+            })
+            .addCase(objectDamageData.rejected, (state, action) => {
+                state.damageDataLoading = false
+                state.damageDataSuccess = false
+                state.damageDataError = true
             })
     }
 })
@@ -145,6 +193,19 @@ export const getSurveyorPolicyList = createAsyncThunk(
     async () => {
         try {
             const response = await gerSurveyorList()
+            return response
+        } catch (error) {
+
+        }
+    }
+)
+
+export const objectDamageData = createAsyncThunk(
+    "OBJECT/DAMAGE/DATA",
+    async (data) => {
+        try {
+            const response = await damageCalculation(data)
+            return response
         } catch (error) {
 
         }

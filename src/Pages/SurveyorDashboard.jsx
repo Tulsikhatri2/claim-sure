@@ -19,13 +19,16 @@ import { Menu, Dashboard, Logout } from "@mui/icons-material";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useNavigate } from "react-router-dom";
 import CreatePolicy from "../Components/CreatePolicy";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getSurveyorPolicyList } from "../Redux/Slice/dataSlice";
+import ViewPolicyDetails from "../Components/ViewPolicyDetails";
 
 const drawerWidth = 265;
 
 const SurveyorDashboard = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [view, setView] = useState(false)
+  const [viewPolicy, setViewPolicy] = useState(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const policies = [
@@ -34,7 +37,8 @@ const SurveyorDashboard = () => {
     { id: "ID789", asset: "Bike", status: "Fulfilled", date: "05/07/2024" },
     { id: "ID789", asset: "Life", status: "Rejected", date: "05/07/2024" },
   ];
-
+  const { surveyorList } = useSelector(state => state.data)
+  console.log(surveyorList, "surveyorList")
   useEffect(() => {
     dispatch(getSurveyorPolicyList())
   }, [])
@@ -54,6 +58,10 @@ const SurveyorDashboard = () => {
     { text: "Dashboard", icon: <Dashboard /> },
     { text: "Logout", icon: <Logout /> },
   ];
+
+  const handleViewClose = () => {
+    setView(false)
+  }
 
   const drawer = (
     <div>
@@ -166,40 +174,53 @@ const SurveyorDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {policies.map((policy, index) => (
-                  <tr key={index} style={{ borderBottom: "1px solid #E0E0E0" }}>
-                    <td style={{ padding: "10px", fontWeight: "800", textAlign: "center" }}>{policy.id}</td>
-                    <td style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{policy.asset}</td>
-                    <td style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>Insurance Amount</td>
-                    <td>
-                      <p style={{
-                        paddingBlock: "3px",
-                        paddingInline: "10px",
-                        borderRadius: "2vh",
-                        border: `${policy.status == "Active" ? "1px solid green" :
-                          policy.status == "Fulfilled" ? "1px solid blue" :
-                            policy.status == "Rejected" ? "1px solid red" : "1px solid #9C9C9C"}`,
-                        fontSize: "1.5vh",
-                        fontWeight: "bold",
-                        color: `${policy.status == "Active" ? "green" :
-                          policy.status == "Fulfilled" ? "blue" :
-                            policy.status == "Rejected" ? "red" : "#9C9C9C"}`,
-                        width: "100%",
-                        textAlign: "center"
-                      }}>
-                        {policy.status}
-                      </p>
-                    </td>
-                    <td style={{ textAlign: "center", padding: "10px", color: "#9C9C9C", fontSize: "1.8vh", fontWeight: "bold" }}>
-                      {policy.date}
-                    </td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>
-                      <Button variant="contained" sx={{ fontWeight: "bold", fontSize: "1.5vh" }}
-                      // disabled={policy.status == "Rejected"}
-                      >View</Button>
-                    </td>
-                  </tr>
-                ))}
+                {surveyorList?.map((policy, index) => {
+                  const date = policy?.createdAt
+                  const formattedDate = new Date(date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                  });
+                  return (
+                    <tr key={index} style={{ borderBottom: "1px solid #E0E0E0" }}>
+                      <td style={{ padding: "10px", fontWeight: "800", textAlign: "center" }}>{policy?.customerId}</td>
+                      <td style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{policy?.type?.toUpperCase()}</td>
+                      <td style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{policy?.insuranceAmount}</td>
+                      <td>
+                        <p style={{
+                          paddingBlock: "3px",
+                          paddingInline: "10px",
+                          borderRadius: "2vh",
+                          border: `${policy?.policyStatus == "active" ? "1px solid green" :
+                            policy?.policyStatus == "fulfilled" ? "1px solid blue" :
+                              policy?.policyStatus == "rejected" ? "1px solid red" : "1px solid #9C9C9C"}`,
+                          fontSize: "1.5vh",
+                          fontWeight: "bold",
+                          color: `${policy?.policyStatus == "active" ? "green" :
+                            policy?.policyStatus == "fulfilled" ? "blue" :
+                              policy?.policyStatus == "rejected" ? "red" : "#9C9C9C"}`,
+                          width: "100%",
+                          textAlign: "center"
+                        }}>
+                          {policy?.policyStatus?.toUpperCase()}
+                        </p>
+                      </td>
+                      <td style={{ textAlign: "center", padding: "10px", color: "#9C9C9C", fontSize: "1.8vh", fontWeight: "bold" }}>
+                        {formattedDate}
+                      </td>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
+                        <Button variant="contained" sx={{ fontWeight: "bold", fontSize: "1.5vh" }}
+                          // disabled={policy.status == "Rejected"}
+                          onClick={() => {
+                            setViewPolicy(policy)
+                            setView(true)
+                          }}
+                        >View</Button>
+                      </td>
+                    </tr>
+                  )
+                })
+                }
               </tbody>
             </table>
           </Box>
@@ -207,6 +228,7 @@ const SurveyorDashboard = () => {
         <Typography variant="body1">
         </Typography>
       </Box>
+      <ViewPolicyDetails open={view} handleClose={handleViewClose} viewPolicy={viewPolicy} />
     </Box >
   );
 }

@@ -59,4 +59,15 @@ export const governmentAcceptancePolicy = async (payload) => {
 export const gerSurveyorList = async () => {
     const response = await axiosInstance.get("/surveyors/claim-policies")
     console.log(response, "surveyor get data policy list")
+    return response.data
+}
+
+export const damageCalculation = async (payload) => {
+    const { assessment, surveyorComments, id } = payload
+    const response = await axiosInstance.put(`/surveyors/review/${id}`, {
+        assessment: assessment,
+        surveyorComments: surveyorComments
+    })
+    console.log(response, "surveyor damage calculation response")
+    return response.data
 }
