@@ -1,215 +1,209 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { claimPolicy, createPolicy, damageCalculation, gerSurveyorList, getCustomerPolicyList, getGovernmentRequestedList, governmentAcceptancePolicy } from "../Service/service";
+import {
+  claimPolicy,
+  createPolicy,
+  damageCalculation,
+  gerSurveyorList,
+  getCustomerPolicyList,
+  getGovernmentRequestedList,
+  governmentAcceptancePolicy,
+} from "../Service/service";
 import { fabClasses } from "@mui/material";
 
 const dataSlice = createSlice({
-    name: "data",
-    initialState: {
-        customerPolicyList: [],
-        loadingData: false,
-        successData: false,
-        errorData: false,
-        createPolicyloading: false,
-        createPolicySuccess: false,
-        createPolicyError: false,
-        governmentListLoading: false,
-        governmentListSuccess: false,
-        governmentListError: false,
-        governmentRequestedList: [],
-        acceptanceLoading: false,
-        acceptanceSuccess: false,
-        acceptanceError: false,
-        surveyorList: [],
-        surveyorListLoading: false,
-        surveyorListSuccess: false,
-        surveyorListError: false,
-        damageDataLoading: false,
-        damageDataSuccess: false,
-        damageDataError: false
-    },
-    reducers: {
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(createPolicyData.pending, (state, action) => {
-                state.createPolicyloading = true
-                state.createPolicySuccess = false
-                state.createPolicyError = false
-            })
-            .addCase(createPolicyData.fulfilled, (state, action) => {
-                state.createPolicyloading = false
-                state.createPolicySuccess = true
-                state.createPolicyError = false
-            })
-            .addCase(createPolicyData.rejected, (state, action) => {
-                state.createPolicyloading = false
-                state.createPolicySuccess = false
-                state.createPolicyError = true
-            })
-            .addCase(getCustomerPolicyListData.pending, (state, action) => {
-                state.loadingData = true
-                state.successData = false
-                state.errorData = false
-            })
-            .addCase(getCustomerPolicyListData.fulfilled, (state, action) => {
-                state.loadingData = false
-                state.successData = true
-                state.errorData = false
-                state.customerPolicyList = action?.payload?.policies
-            })
-            .addCase(getCustomerPolicyListData.rejected, (state, action) => {
-                state.loadingData = false
-                state.successData = false
-                state.errorData = true
-            })
-            .addCase(governmentRequestList.pending, (state, action) => {
-                state.governmentListLoading = true
-                state.governmentListSuccess = false
-                state.governmentListError = false
-            })
-            .addCase(governmentRequestList.fulfilled, (state, action) => {
-                state.governmentListLoading = false
-                state.governmentListSuccess = true
-                state.governmentListError = false
-                state.governmentRequestedList = action.payload?.policies
-            })
-            .addCase(governmentRequestList.rejected, (state, action) => {
-                state.governmentListLoading = false
-                state.governmentListSuccess = false
-                state.governmentListError = true
-            })
-            .addCase(governmentAcceptAction.pending, (state, action) => {
-                state.acceptanceLoading = true
-                state.acceptanceSuccess = false
-                state.acceptanceError = false
-            })
-            .addCase(governmentAcceptAction.fulfilled, (state, action) => {
-                state.acceptanceLoading = false
-                state.acceptanceSuccess = true
-                state.acceptanceError = false
-            })
-            .addCase(governmentAcceptAction.rejected, (state, action) => {
-                state.acceptanceLoading = false
-                state.acceptanceSuccess = false
-                state.acceptanceError = true
-            })
-            .addCase(getSurveyorPolicyList.pending, (state, action) => {
-                state.surveyorListLoading = true
-                state.surveyorListSuccess = false
-                state.surveyorListError = false
-            })
-            .addCase(getSurveyorPolicyList.fulfilled, (state, action) => {
-                state.surveyorListLoading = false
-                state.surveyorListSuccess = true
-                state.surveyorListError = false
-                state.surveyorList = action.payload
-            })
-            .addCase(getSurveyorPolicyList.rejected, (state, action) => {
-                state.surveyorListLoading = false
-                state.surveyorListSuccess = false
-                state.surveyorListError = true
-            })
-            .addCase(objectDamageData.pending, (state, action) => {
-                state.damageDataLoading = true
-                state.damageDataSuccess = false
-                state.damageDataError = false
-            })
-            .addCase(objectDamageData.fulfilled, (state, action) => {
-                state.damageDataLoading = false
-                state.damageDataSuccess = true
-                state.damageDataError = false
-            })
-            .addCase(objectDamageData.rejected, (state, action) => {
-                state.damageDataLoading = false
-                state.damageDataSuccess = false
-                state.damageDataError = true
-            })
-    }
-})
+  name: "data",
+  initialState: {
+    customerPolicyList: [],
+    loadingData: false,
+    successData: false,
+    errorData: false,
+    createPolicyloading: false,
+    createPolicySuccess: false,
+    createPolicyError: false,
+    governmentListLoading: false,
+    governmentListSuccess: false,
+    governmentListError: false,
+    governmentRequestedList: [],
+    acceptanceLoading: false,
+    acceptanceSuccess: false,
+    acceptanceError: false,
+    surveyorList: [],
+    surveyorListLoading: false,
+    surveyorListSuccess: false,
+    surveyorListError: false,
+    damageDataLoading: false,
+    damageDataSuccess: false,
+    damageDataError: false,
+    waitingForGovt: [],
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(createPolicyData.pending, (state, action) => {
+        state.createPolicyloading = true;
+        state.createPolicySuccess = false;
+        state.createPolicyError = false;
+      })
+      .addCase(createPolicyData.fulfilled, (state, action) => {
+        state.createPolicyloading = false;
+        state.createPolicySuccess = true;
+        state.createPolicyError = false;
+      })
+      .addCase(createPolicyData.rejected, (state, action) => {
+        state.createPolicyloading = false;
+        state.createPolicySuccess = false;
+        state.createPolicyError = true;
+      })
+      .addCase(getCustomerPolicyListData.pending, (state, action) => {
+        state.loadingData = true;
+        state.successData = false;
+        state.errorData = false;
+      })
+      .addCase(getCustomerPolicyListData.fulfilled, (state, action) => {
+        state.loadingData = false;
+        state.successData = true;
+        state.errorData = false;
+        state.customerPolicyList = action?.payload?.policies;
+      })
+      .addCase(getCustomerPolicyListData.rejected, (state, action) => {
+        state.loadingData = false;
+        state.successData = false;
+        state.errorData = true;
+      })
+      .addCase(governmentRequestList.pending, (state, action) => {
+        state.governmentListLoading = true;
+        state.governmentListSuccess = false;
+        state.governmentListError = false;
+      })
+      .addCase(governmentRequestList.fulfilled, (state, action) => {
+        state.governmentListLoading = false;
+        state.governmentListSuccess = true;
+        state.governmentListError = false;
+        state.governmentRequestedList = action.payload?.policies;
+      })
+      .addCase(governmentRequestList.rejected, (state, action) => {
+        state.governmentListLoading = false;
+        state.governmentListSuccess = false;
+        state.governmentListError = true;
+      })
+      .addCase(governmentAcceptAction.pending, (state, action) => {
+        state.acceptanceLoading = true;
+        state.acceptanceSuccess = false;
+        state.acceptanceError = false;
+      })
+      .addCase(governmentAcceptAction.fulfilled, (state, action) => {
+        state.acceptanceLoading = false;
+        state.acceptanceSuccess = true;
+        state.acceptanceError = false;
+      })
+      .addCase(governmentAcceptAction.rejected, (state, action) => {
+        state.acceptanceLoading = false;
+        state.acceptanceSuccess = false;
+        state.acceptanceError = true;
+      })
+      .addCase(getSurveyorPolicyList.pending, (state, action) => {
+        state.surveyorListLoading = true;
+        state.surveyorListSuccess = false;
+        state.surveyorListError = false;
+      })
+      .addCase(getSurveyorPolicyList.fulfilled, (state, action) => {
+        state.surveyorListLoading = false;
+        state.surveyorListSuccess = true;
+        state.surveyorListError = false;
+        state.surveyorList = action.payload;
+      })
+      .addCase(getSurveyorPolicyList.rejected, (state, action) => {
+        state.surveyorListLoading = false;
+        state.surveyorListSuccess = false;
+        state.surveyorListError = true;
+      })
+      .addCase(objectDamageData.pending, (state, action) => {
+        state.damageDataLoading = true;
+        state.damageDataSuccess = false;
+        state.damageDataError = false;
+      })
+      .addCase(objectDamageData.fulfilled, (state, action) => {
+        state.damageDataLoading = false;
+        state.damageDataSuccess = true;
+        state.damageDataError = false;
+      })
+      .addCase(objectDamageData.rejected, (state, action) => {
+        state.damageDataLoading = false;
+        state.damageDataSuccess = false;
+        state.damageDataError = true;
+      });
+  },
+});
 
 export const createPolicyData = createAsyncThunk(
-    "CREATE/POLICY",
-    async (data) => {
-        try {
-            const response = await createPolicy(data)
-            return response
-        } catch (error) {
-
-        }
-    }
-)
+  "CREATE/POLICY",
+  async (data) => {
+    try {
+      const response = await createPolicy(data);
+      return response;
+    } catch (error) {}
+  }
+);
 
 export const getCustomerPolicyListData = createAsyncThunk(
-    "GET/POLICY/LIST",
-    async () => {
-        try {
-            const response = await getCustomerPolicyList()
-            return response
-        } catch (error) {
-
-        }
-    }
-)
+  "GET/POLICY/LIST",
+  async () => {
+    try {
+      const response = await getCustomerPolicyList();
+      return response;
+    } catch (error) {}
+  }
+);
 
 export const governmentRequestList = createAsyncThunk(
-    "GET/GOVERNMENT/POLICY/LIST",
-    async () => {
-        try {
-            const response = await getGovernmentRequestedList()
-            console.log(response, "requested policies list")
-            return response
-        } catch (error) {
-
-        }
-    }
-)
+  "GET/GOVERNMENT/POLICY/LIST",
+  async () => {
+    try {
+      const response = await getGovernmentRequestedList();
+      console.log(response, "requested policies list");
+      return response;
+    } catch (error) {}
+  }
+);
 
 export const claimCustomerPolicy = createAsyncThunk(
-    "CLAIM/POLICY/DATA",
-    async (id) => {
-        try {
-            const response = await claimPolicy(id)
-            return response
-        } catch (error) {
-
-        }
-    }
-)
+  "CLAIM/POLICY/DATA",
+  async (id) => {
+    try {
+      const response = await claimPolicy(id);
+      return response;
+    } catch (error) {}
+  }
+);
 
 export const governmentAcceptAction = createAsyncThunk(
-    "GOVERNMENT/ACCEPT/POLICY",
-    async (data) => {
-        try {
-            const response = await governmentAcceptancePolicy(data)
-            return response
-        } catch (error) {
-
-        }
-    }
-)
+  "GOVERNMENT/ACCEPT/POLICY",
+  async (data) => {
+    try {
+      const response = await governmentAcceptancePolicy(data);
+      return response;
+    } catch (error) {}
+  }
+);
 
 export const getSurveyorPolicyList = createAsyncThunk(
-    "SURVEYOR/POLICY/LIST",
-    async () => {
-        try {
-            const response = await gerSurveyorList()
-            return response
-        } catch (error) {
-
-        }
-    }
-)
+  "SURVEYOR/POLICY/LIST",
+  async () => {
+    try {
+      const response = await gerSurveyorList();
+      return response;
+    } catch (error) {}
+  }
+);
 
 export const objectDamageData = createAsyncThunk(
-    "OBJECT/DAMAGE/DATA",
-    async (data) => {
-        try {
-            const response = await damageCalculation(data)
-            return response
-        } catch (error) {
+  "OBJECT/DAMAGE/DATA",
+  async (data) => {
+    try {
+      const response = await damageCalculation(data);
+      return response;
+    } catch (error) {}
+  }
+);
 
-        }
-    }
-)
-
-export default dataSlice.reducer
+export default dataSlice.reducer;
